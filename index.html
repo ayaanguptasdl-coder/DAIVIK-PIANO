@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Piano</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            margin: 0;
+            background: #111827;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #app {
+            width: 95%;
+            max-width: 1000px;
+            text-align: center;
+        }
+
+        h1 {
+            color: white;
+            font-size: 45px;
+            margin-bottom: 10px;
+        }
+
+        #status {
+            color: #60a5fa;
+            font-size: 20px;
+            margin: 20px;
+            min-height: 25px;
+        }
+
+        #startButton {
+            border: 0;
+            background: #2563eb;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 25px;
+        }
+
+        #startButton:hover {
+            background: #1d4ed8;
+        }
+
+        .piano {
+            position: relative;
+            width: 100%;
+            height: 350px;
+            background: #000;
+            padding: 8px;
+            border-radius: 15px;
+
+            display: flex;
+        }
+
+        .white {
+            position: relative;
+            flex: 1;
+
+            background: white;
+            border: 2px solid #222;
+            border-radius: 0 0 10px 10px;
+
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+
+            padding-bottom: 25px;
+
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+
+            cursor: pointer;
+
+            transition: 0.08s;
+        }
+
+        .white:hover {
+            background: #e5e7eb;
+        }
+
+        .white.active {
+            background: #93c5fd;
+            transform: translateY(5px);
+        }
+
+        .black {
+            position: absolute;
+
+            width: 7%;
+            height: 210px;
+
+            background: #111;
+            border-radius: 0 0 8px 8px;
+
+            z-index: 5;
+
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+
+            padding-bottom: 15px;
+
+            color: white;
+            font-size: 14px;
+
+            cursor: pointer;
+
+            box-shadow: 0 5px 8px rgba(0, 0, 0, 0.5);
+
+            transition: 0.08s;
+        }
+
+        .black:hover {
+            background: #333;
+        }
+
+        .black.active {
+            background: #2563eb;
+            transform: translateY(5px);
+        }
+
+        .instructions {
+            color: #9ca3af;
+            margin-top: 25px;
+            font-size: 16px;
+        }
+
+        @media (max-width: 700px) {
+
+            h1 {
+                font-size: 32px;
+            }
+
+            .piano {
+                height: 250px;
+            }
+
+            .black {
+                height: 150px;
+            }
+
+            .white {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="app">
+
+        <h1>🎹 MY PIANO</h1>
+
+        <div id="status">
+            Click Start Piano
+        </div>
+
+        <button id="startButton">
+            🎵 Start Piano
+        </button>
+
+        <div class="piano">
+
+            <!-- White keys -->
+
+            <div class="white" data-note="C4" data-key="a">C<br>A</div>
+            <div class="white" data-note="D4" data-key="s">D<br>S</div>
+            <div class="white" data-note="E4" data-key="d">E<br>D</div>
+            <div class="white" data-note="F4" data-key="f">F<br>F</div>
+            <div class="white" data-note="G4" data-key="g">G<br>G</div>
+            <div class="white" data-note="A4" data-key="h">A<br>H</div>
+            <div class="white" data-note="B4" data-key="j">B<br>J</div>
+            <div class="white" data-note="C5" data-key="k">C<br>K</div>
+
+            <!-- Black keys -->
+
+            <div class="black" data-note="C#4" data-key="w" style="left: 9.2%;">
+                C#
+            </div>
+
+            <div class="black" data-note="D#4" data-key="e" style="left: 21.7%;">
+                D#
+            </div>
+
+            <div class="black" data-note="F#4" data-key="t" style="left: 46.7%;">
+                F#
+            </div>
+
+            <div class="black" data-note="G#4" data-key="y" style="left: 59.2%;">
+                G#
+            </div>
+
+            <div class="black" data-note="A#4" data-key="u" style="left: 71.7%;">
+                A#
+            </div>
+
+        </div>
+
+        <div class="instructions">
+            🎹 Click the keys or use your keyboard:
+            A S D F G H J K
+            &nbsp; | &nbsp;
+            W E T Y U
+        </div>
+
+    </div>
+
+
+    <script>
+
+        let audioContext = null;
+
+        let pianoStarted = false;
+
+
+        /* -----------------------------
+           Start Piano
+        ----------------------------- */
+
+        document.getElementById("startButton").addEventListener("click", function () {
+
+            if (!audioContext) {
+                audioContext = new (
+                    window.AudioContext ||
+                    window.webkitAudioContext
+                )();
+            }
+
+            audioContext.resume();
+
+            pianoStarted = true;
+
+            document.getElementById("status").textContent =
+                "🎵 Piano Ready!";
+
+            this.textContent = "🎹 Piano Started";
+
+        });
+
+
+        /* -----------------------------
+           Piano frequencies
+        ----------------------------- */
+
+        const frequencies = {
+
+            "C4": 261.63,
+            "C#4": 277.18,
+            "D4": 293.66,
+            "D#4": 311.13,
+            "E4": 329.63,
+
+            "F4": 349.23,
+            "F#4": 369.99,
+            "G4": 392.00,
+            "G#4": 415.30,
+            "A4": 440.00,
+            "A#4": 466.16,
+            "B4": 493.88,
+
+            "C5": 523.25
+        };
+
+
+        /* -----------------------------
+           Play sound
+        ----------------------------- */
+
+        function playNote(note) {
+
+            if (!pianoStarted) {
+                return;
+            }
+
+            const frequency = frequencies[note];
+
+            if (!frequency) {
+                return;
+            }
+
+            const oscillator = audioContext.createOscillator();
+
+            const gain = audioContext.createGain();
+
+            oscillator.type = "triangle";
+
+            oscillator.frequency.value = frequency;
+
+            gain.gain.setValueAtTime(
+                0.0001,
+                audioContext.currentTime
+            );
+
+            gain.gain.exponentialRampToValueAtTime(
+                0.5,
+                audioContext.currentTime + 0.02
+            );
+
+            gain.gain.exponentialRampToValueAtTime(
+                0.0001,
+                audioContext.currentTime + 1.2
+            );
+
+            oscillator.connect(gain);
+
+            gain.connect(audioContext.destination);
+
+            oscillator.start();
+
+            oscillator.stop(
+                audioContext.currentTime + 1.2
+            );
+        }
+
+
+        /* -----------------------------
+           Key animation
+        ----------------------------- */
+
+        function activateKey(element) {
+
+            element.classList.add("active");
+
+            setTimeout(function () {
+                element.classList.remove("active");
+            }, 150);
+        }
+
+
+        /* -----------------------------
+           Mouse / Touch controls
+        ----------------------------- */
+
+        const pianoKeys = document.querySelectorAll(
+            ".white, .black"
+        );
+
+        pianoKeys.forEach(function (key) {
+
+            key.addEventListener("mousedown", function () {
+
+                playNote(key.dataset.note);
+
+                activateKey(key);
+
+            });
+
+            key.addEventListener("touchstart", function (event) {
+
+                event.preventDefault();
+
+                playNote(key.dataset.note);
+
+                activateKey(key);
+
+            });
+
+        });
+
+
+        /* -----------------------------
+           Computer keyboard controls
+        ----------------------------- */
+
+        document.addEventListener("keydown", function (event) {
+
+            if (event.repeat) {
+                return;
+            }
+
+            const pressedKey = event.key.toLowerCase();
+
+            const pianoKey = document.querySelector(
+                `[data-key="${pressedKey}"]`
+            );
+
+            if (pianoKey) {
+
+                playNote(pianoKey.dataset.note);
+
+                activateKey(pianoKey);
+            }
+
+        });
+
+
+    </script>
+
+</body>
+
+</html>
